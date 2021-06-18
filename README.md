@@ -7,3 +7,8 @@ Then follow following steps:
  - az login
  - az account set --subscription << SUBSCRIPTION NAME/ID >>
  - az deployment group create -f ./main.bicep -g << RESOURCE GROUP NAME >>
+
+## Bot Project
+![Architecture Schema](bot-project/bot-project.png)
+
+Link to [Draw.IO](bot-project/bot-project.drawio)
