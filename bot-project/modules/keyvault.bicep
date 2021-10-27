@@ -1,7 +1,7 @@
 param location string
 param name string
 param tags object
-param adminUserId string
+param adminUserIds array
 
 resource kv 'Microsoft.KeyVault/vaults@2019-09-01' = {
   name: name
@@ -13,27 +13,20 @@ resource kv 'Microsoft.KeyVault/vaults@2019-09-01' = {
       family: 'A'
       name: 'standard'
     } 
-    accessPolicies: [
-      {
-        objectId: adminUserId
+    accessPolicies: [for objectId in adminUserIds:{
+        objectId: objectId
         tenantId: subscription().tenantId
         permissions:{
           secrets:[
-            'all'
-            'backup'
-            'delete'
             'get'
             'list'
-            'purge'
-            'recover'
-            'restore'
             'set'
           ]
         }
-      }
-    ]
+      }]
   }
 }
 
 output id string = kv.id
 output name string = kv.name
+

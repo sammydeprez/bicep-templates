@@ -9,8 +9,10 @@ resource app 'Microsoft.Web/sites@2019-08-01' = {
   location: location
   tags: tags
   properties: {
+    httpsOnly: true
     serverFarmId: serverFarmId
     siteConfig: {
+      ftpsState: 'FtpsOnly'
       alwaysOn: true
       webSocketsEnabled: true
       cors: corsAll ? {

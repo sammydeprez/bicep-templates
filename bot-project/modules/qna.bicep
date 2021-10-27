@@ -1,5 +1,5 @@
 param location string
-param name string = 'qna-bot-dev'
+param name string
 param tags object
 param serverFarmId string
 param appInsightsKey string
@@ -13,7 +13,7 @@ resource search 'Microsoft.Search/searchServices@2020-08-01-preview' = {
   tags: tags
   location: location
   sku: {
-    name: 'free'
+    name: 'basic'
   }
 }
 
@@ -51,7 +51,7 @@ resource qnacog 'Microsoft.CognitiveServices/accounts@2017-04-18' = {
   tags: tags
   kind: 'QnAMaker'
   sku: {
-    name: 'F0'
+    name: 'S0'
   }
   properties: {
     apiProperties:{

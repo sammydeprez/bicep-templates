@@ -9,6 +9,10 @@ resource app 'Microsoft.Web/sites@2019-08-01' = {
   tags: tags
   kind: 'functionapp'
   properties: {
+    siteConfig:{
+      ftpsState: 'FtpsOnly'
+    }
+    httpsOnly: true
     serverFarmId: serverFarmId
   }
   identity:{
