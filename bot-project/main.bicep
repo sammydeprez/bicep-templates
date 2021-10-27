@@ -21,17 +21,14 @@ param environment string
 @maxLength(15)
 param projectName string
 
-@minLength(36)
-@maxLength(36)
-@description('Array that contains Group or User Object Ids that can edit & view secrets in Key Vault')
-
-param adminUserIds array
+param adminUserId string
+param devopsUserId string
 param botName string
 param applicationId string
 @secure()
 param applicationSecret string
 param buildId string
-param createStorageAccount bool
+param createStorageAccount bool = true
 
 var tags = {
   Description: 'Chatbot ${botName}'
@@ -39,13 +36,24 @@ var tags = {
   Build: buildId
 }
 
+var adminUserIds = [
+  adminUserId
+  devopsUserId
+]
+
 /**************************/
 /*     RESOURCE GROUPS    */
 /**************************/
 
 
-resource rg 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+resource rg_resources 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name: 'rg-${projectName}-${environment}-01'
+  location: location
+  tags: tags
+}
+
+resource rg_networking 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+  name: 'rg-${projectName}-${environment}-network-01'
   location: location
   tags: tags
 }
@@ -59,8 +67,8 @@ resource rg 'Microsoft.Resources/resourceGroups@2021-04-01' = {
 /**************************/
 
 module bot 'bot-template.bicep' = {
-  name:'Bot Deployment'
-  scope: rg
+  name:'Bot_Deployment'
+  scope: rg_resources
   params:{
     adminUserIds: adminUserIds
     applicationId: applicationId

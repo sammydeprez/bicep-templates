@@ -19,10 +19,6 @@ param environment string
 @maxLength(15)
 param projectName string
 
-@minLength(36)
-@maxLength(36)
-@description('Array that contains Group or User Object Ids that can edit & view secrets in Key Vault')
-
 param adminUserIds array
 param botName string
 param applicationId string

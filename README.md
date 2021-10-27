@@ -31,7 +31,8 @@ az deployment sub create `
     location='westeurope' `
     environment='dev' `
     projectName='{projectName}' `
-    adminUserIds= "['{UserId}']" `
+    adminUserId="['{UserId}']" `
+    devopsUserId="['{UserId}']" `
     botName='{BotName}' `
     applicationId='{AppId}' `
     applicationSecret='{AppSecret}' `
@@ -47,7 +48,8 @@ az deployment group create `
     location='westeurope' `
     environment='dev' `
     projectName='{projectName}' `
-    adminUserIds= "['{UserId}']" `
+    adminUserId="['{UserId}']" `
+    devopsUserId="['{UserId}']" `
     botName='{BotName}' `
     applicationId='{AppId}' `
     applicationSecret='{AppSecret}' `
