@@ -19,13 +19,15 @@ param environment string
 @maxLength(15)
 param projectName string
 
-param adminUserIds array
 param botName string
+param buildId string = 'manual'
+
+param adminUserIds array = []
+
 param applicationId string
 @secure()
 param applicationSecret string
-param buildId string
-param createStorageAccount bool
+
 
 var keyVaultName = 'kv-${projectName}-${environment}-01'
 var appServicePlanName = 'plan-${projectName}-${environment}-01'
@@ -36,12 +38,14 @@ var cosmosDbName = 'cosmos-${projectName}-${environment}-01'
 var luisAuthoringName = 'cog-${projectName}-authoring-${environment}-01'
 var luisPredictingName = 'cog-${projectName}-predicting-${environment}-01'
 var botServiceName = 'bot-${projectName}-${environment}-01'
-var logicName = 'logic-${projectName}-${environment}-01'
-var qnaName = 'qna-${projectName}-${environment}-01'
+var searchName = 'srch-${projectName}-${environment}-01'
+var speechName = 'speech-${projectName}-${environment}-01'
+var languageName = 'lang-${projectName}-${environment}-01'
 var storageAccountName = 'st${projectName}${environment}01'
 var botDisplayName = (environment != 'prd'? '${botName} ${environment}' : botName)
 
 var botEndpoint = 'https://${appServiceName}.azurewebsites.net/api/messages'
+
 
 var tags = {
   Description: 'Chatbot ${botName}'
@@ -53,8 +57,7 @@ var tags = {
 /*        RESOURCES       */
 /**************************/
 
-
-module st './modules/storageaccount.bicep' = if(createStorageAccount) {
+module st './modules/storageaccount.bicep' = {
   name: 'storageAccountDeploy'
   params:{
     name: storageAccountName
@@ -180,6 +183,34 @@ module luis './modules/luis.bicep' = {
   }
 }
 
+module search './modules/search.bicep' = {
+  name: searchName
+  params: {
+    name:searchName
+    location: location
+    tags: tags
+  }
+}
+
+module language './modules/language.bicep' = {
+  name: languageName
+  params: {
+    name: languageName
+    location: location
+    tags: tags
+  }
+}
+
+
+module speech './modules/speech.bicep' = {
+  name: speechName
+  params: {
+    name: speechName
+    location: location
+    tags: tags
+  }
+}
+
 module bot './modules/botservice.bicep' = {
   name: 'botServiceDeploy'
   params: {
@@ -205,7 +236,7 @@ module kvsecret_DirectLine './modules/keyvault_secret.bicep' = {
 module appsettings './modules/appsettings.bicep' = {
   name: 'setAppSettings'
   params: {
-    appName: '${app.outputs.name}'
+    appName: app.outputs.name
     settings: {
       APPINSIGHTS_INSTRUMENTATIONKEY: ai_web.outputs.instrumentationKey
       APPLICATIONINSIGHTS_CONNECTION_STRING: ai_web.outputs.connectionstring
@@ -218,35 +249,12 @@ module appsettings './modules/appsettings.bicep' = {
 module funcsettings './modules/appsettings.bicep' = {
   name: 'setFuncSettings'
   params: {
-    appName: '${func.outputs.name}'
+    appName: func.outputs.name
     settings: {
       FUNCTIONS_EXTENSION_VERSION: '~3'
       APPINSIGHTS_INSTRUMENTATIONKEY: ai_web.outputs.instrumentationKey
       APPLICATIONINSIGHTS_CONNECTION_STRING: ai_web.outputs.connectionstring
       DirectLineSecret: '@Microsoft.KeyVault(VaultName=${kv.outputs.name};SecretName=DirectLineSecret)'
     }
-  }
-}
-
-module qna './modules/qna.bicep' = {
-  name: 'searchDeploy'
-  params:{
-    location: location
-    name: qnaName
-    tags: tags
-    serverFarmId: asp.outputs.id
-    appInsightsName: ai_web.outputs.name
-    appInsightsAppId: ai_web.outputs.appId
-    appInsightsKey: ai_web.outputs.instrumentationKey
-    keyVaultName: kv.outputs.name
-  }
-}
-
-module logic './modules/logic.bicep' = {
-  name: 'logicDeploy'
-  params:{
-    location: location
-    name: logicName
-    tags: tags
   }
 }
